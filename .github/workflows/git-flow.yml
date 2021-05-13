@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Merge feature into develop
+      - name: Merge features into develop
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: develop
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Merge release into main
+      - name: Merge releases into main
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: main
@@ -34,6 +34,6 @@ jobs:
         with:
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "Merge ${{ format(github.ref }} into develop"
+          pr_title: "Merge ${{ format(github.ref, 'refs/heads/') }} into develop"
           pr_body: "This PR was created by a workflow"
           pr_label: "git-flow"
