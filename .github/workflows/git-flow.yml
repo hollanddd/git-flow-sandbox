@@ -1,5 +1,7 @@
 name: Auto Merge Release (git flow)
 on:
+  create:
+
 jobs:
   develop:
     if: ${{ contains(github.ref, 'refs/heads/feature') }}
