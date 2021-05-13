@@ -1,0 +1,20 @@
+#tests
+__tests__
+coverage
+test
+*.tests.ts
+*.tests.js
+
+#build tools
+tsconfig.json
+./babel.config.js
+dist
+scripts
+
+#linters
+.eslintrc*
+
+#editor settings
+.DS_Store
+.idea
+.editorconfig
