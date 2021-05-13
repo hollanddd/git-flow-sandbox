@@ -1,6 +1,6 @@
 name: Auto Merge Release (git flow)
 on:
-  create:
+  create
 
 jobs:
   develop:
