@@ -34,12 +34,13 @@ jobs:
           body: ${{ steps.build_changelog.outputs.changelog }}
           tag_schema: semantic
 
-      - name: Bump version
+      - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: '12.x'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@hollanddd'
+
+      - name: Bump version
         run: yarn version --new-version ${{ steps.version.outputs.result.current }} --not-git-tag-version
 
       - name: setup git config
