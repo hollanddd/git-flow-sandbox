@@ -10,9 +10,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build changelog
         id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ardalanamini/auto-changelog@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          exclude: 'perf,other,breaking'
       - name: Create a GitHub release
         id: create_release
         uses: zendesk/action-create-release@v1
