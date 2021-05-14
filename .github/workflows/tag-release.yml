@@ -41,7 +41,7 @@ jobs:
           scope: '@hollanddd'
 
       - name: Bump version
-        run: 'yarn version --new-version ${{ steps.ref_version.outputs.result.current }} --no-git-tag-version'
+        run: npm version ${GITHUB_REF:19}
 
       - name: setup git config
         run: |
@@ -49,13 +49,13 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
 
-      - name: git status
+      - name: Git status
         run: git status
 
       - name: Commit new version
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: 'bump version to ${{ steps.version.outputs.result.current }}'
+          commit_message: ci: release version bump
           commit_options: '--no-verify --signoff'
           file_pattern: package.json
           status_options: '--untracked-files=no'
@@ -65,7 +65,7 @@ jobs:
         with:
           destination_branch: main
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: 'Merge release ${{ steps.version.outputs.result.current }} into main'
+          pr_title: ci: merge release into main
           pr_body: This PR was created by a workflow
           pr_label: git-flow
 
@@ -74,6 +74,6 @@ jobs:
         with:
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: 'Merge release ${{ steps.version.outputs.result.current }} into develop'
+          pr_title: ci: merge release into develop
           pr_body: This PR was created by a workflow action
           pr_label: git-flow
