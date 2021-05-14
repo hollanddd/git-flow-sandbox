@@ -39,25 +39,16 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@hollanddd'
 
+      - name: setup git config
+        run: |
+          git config user.name ${GITHUB_ACTOR}
+          git config user.email "<>"
+
       - name: Bump version
         run: npm version ${GITHUB_REF:19}
 
-      - name: setup git config
-        run: |
-          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-
       - name: Git status
         run: git status
-
-      - name: Commit new version
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: 'ci: release version bump'
-          commit_options: '--no-verify --signoff'
-          file_pattern: package.json
-          status_options: '--untracked-files=no'
 
       - name: Merge releases into main
         uses: repo-sync/pull-request@v2
