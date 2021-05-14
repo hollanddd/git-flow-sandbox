@@ -14,7 +14,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             // version from refs/heads/release/x.x.x
-            return context.ref.substr(19, context.ref.length)
+            return {
+              current: context.ref.substr(19, context.ref.length)
+            }
       - uses: actions/checkout@v2
       - name: Build changelog
         id: build_changelog
@@ -28,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.release_version.outputs.result }}
+          tag_name: '${{ steps.release_version.outputs.result.current }}'
           body: ${{ steps.build_changelog.outputs.changelog }}
           tag_schema: semantic
       - name: Bump version
