@@ -10,11 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Extract feature ref
+        id: ref_extract
+        run: echo "::set-output name=BRANCH::${GITHUB_REF:11}"
+
       - name: Merge features into develop
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "Merge ${{ github.ref }} into develop"
-          pr_body: "This PR was created by a workflow action"
-          pr_label: "git-flow"
+          pr_title: "Merge ${{ steps.ref_extract.output.BRANCH }} into develop"
+          pr_body: This PR was created by a workflow action
+          pr_label: git-flow
