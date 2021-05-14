@@ -50,7 +50,7 @@ jobs:
       - name: Git status
         run: git status
       - name: Git push
-        run: git push ${GITHUB_REF} --no-ff
+        run: git push --no-verify ${GITHUB_REF}
 
       - name: Merge releases into main
         uses: repo-sync/pull-request@v2
