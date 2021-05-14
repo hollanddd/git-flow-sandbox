@@ -13,6 +13,6 @@ jobs:
         with:
           destination_branch: main
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "Merge ${{ format(github.ref, 'refs/heads/') }} into main"
+          pr_title: "Merge ${{ github.ref }} into main"
           pr_body: "This PR was created by a workflow"
           pr_label: "git-flow"
