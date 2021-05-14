@@ -2,8 +2,6 @@
 # Trigger on specific branches to minimize workflow execution.
 name: Auto Update
 
-on: push
-
 on:
   push:
     branches:
