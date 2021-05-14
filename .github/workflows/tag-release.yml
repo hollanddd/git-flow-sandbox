@@ -35,10 +35,21 @@ jobs:
           tag_schema: semantic
 
       - name: Bump version
-        uses: 'reedyuk/npm-version@1.1.1'
+      - uses: actions/setup-node@v2
         with:
-          version: ${{ steps.version.outputs.result.current }}
-          git-tag-version: false
+          node-version: '12.x'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@hollanddd'
+        run: yarn version --new-version ${{ steps.version.outputs.result.current }} --not-git-tag-version
+
+      - name: setup git config
+        run: |
+          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      - name: git status
+        run: git status
 
       - name: Commit new version
         uses: stefanzweifel/git-auto-commit-action@v4
