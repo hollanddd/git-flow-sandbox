@@ -8,10 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Automate version bump
+        uses:  'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Export generated tag
+        id: tag_name
+        run: |
+          echo ::set-output name=new_tag::`cat package.json | jq -r .version`
+        shell: bash
       - name: Build changelog
         id: build_changelog
         uses: ardalanamini/auto-changelog@v1.1.0
         with:
+          tag_name: ${{ }}
+          tag_schema: semantic
           token: ${{ secrets.GITHUB_TOKEN }}
           exclude: 'perf,other,breaking'
       - name: Create a GitHub release
@@ -20,4 +31,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          tag_name: ${{ steps.tag_name.outputs.new_tag }}
           body: ${{ steps.build_changelog.outputs.changelog }}
