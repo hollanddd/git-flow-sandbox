@@ -16,6 +16,11 @@ jobs:
             // version from refs/heads/release/x.x.x
             return { current: context.ref.substr(19, context.ref.length) }
       - uses: actions/checkout@v2
+
+      - name: Extract tag from ref
+        id: ref_version
+        run: echo "::set-output name=CURRENT::${GITHUB_REF:19}"
+
       - name: Build changelog
         id: build_changelog
         uses: ardalanamini/auto-changelog@v1.1.0
@@ -29,7 +34,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.ref_version.outputs.results.current }}
+          tag_name: ${{ steps.ref_version.outputs.CURRENT }}
           body: ${{ steps.build_changelog.outputs.changelog }}
           tag_schema: semantic
 
@@ -39,7 +44,7 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@hollanddd'
 
-      - name: setup git config
+      - name: Setup git
         run: |
           git config user.name ${GITHUB_ACTOR}
           git config user.email "<>"
