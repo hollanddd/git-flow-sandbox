@@ -5,7 +5,9 @@
     "build": "tsc --build",
     "lint": "eslint './src/**/*.ts'",
     "lint:fix": "eslint './src/**/*.ts' --fix",
-    "prepublishOnly": "npm run build && cp -r ./dist/* . && rm -rf ./dist",
+    "prepubrm": "rm -rf ./dist && rm -rf ./src && rm *.test.js",
+    "prepubcopy": "cp -r ./dist/* .",
+    "prepublishOnly": "npm run build && npm run prepubcopy && npm run prepubrm",
     "postpublish": "git clean -fd",
     "test": "jest"
   },

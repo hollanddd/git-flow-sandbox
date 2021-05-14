@@ -1,10 +1,10 @@
 name: Merge releases into develop
 on:
-  create
-
+  push:
+    branches:
+      - 'release/**'
 jobs:
   merge:
-    if: ${{ contains(github.ref, 'release') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,6 +13,6 @@ jobs:
         with:
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: "Merge ${{ format(github.ref, 'refs/heads/') }} into develop"
+          pr_title: "Merge ${{ github.ref }} into develop"
           pr_body: "This PR was created by a workflow action"
           pr_label: "git-flow"

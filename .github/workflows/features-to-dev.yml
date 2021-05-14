@@ -1,6 +1,8 @@
 name: Merge features into develop
 on:
-  create
+  push:
+    branches:
+      - 'feature/**'
 
 jobs:
   merge:
