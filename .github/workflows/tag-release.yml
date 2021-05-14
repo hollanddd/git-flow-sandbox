@@ -7,15 +7,6 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract tag from ref
-        id: ref_version
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // version from refs/heads/release/x.x.x
-            return { current: context.ref.substr(19, context.ref.length) }
-
       - uses: actions/checkout@v2
       - name: Build changelog
         id: build_changelog
@@ -30,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.ref_version.outputs.result.current }}
+          tag_name: ${GITHUB_REF:19}
           body: ${{ steps.build_changelog.outputs.changelog }}
           tag_schema: semantic
 
@@ -41,7 +32,7 @@ jobs:
           scope: '@hollanddd'
 
       - name: Bump version
-        run: 'yarn version --new-version ${{ steps.ref_version.outputs.result.current }} --no-git-tag-version'
+        run: npm version ${GITHUB_REF:19}
 
       - name: setup git config
         run: |
@@ -55,7 +46,7 @@ jobs:
       - name: Commit new version
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: 'bump version to ${{ steps.version.outputs.result.current }}'
+          commit_message: bump to ${GITHUB_REF:19}
           commit_options: '--no-verify --signoff'
           file_pattern: package.json
           status_options: '--untracked-files=no'
@@ -65,7 +56,7 @@ jobs:
         with:
           destination_branch: main
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: 'Merge release ${{ steps.version.outputs.result.current }} into main'
+          pr_title: 'Merge release ${GITHUB_REF} into main'
           pr_body: This PR was created by a workflow
           pr_label: git-flow
 
@@ -74,6 +65,6 @@ jobs:
         with:
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: 'Merge release ${{ steps.version.outputs.result.current }} into develop'
+          pr_title: Merge release ${GITHUB_REF:19} into develop
           pr_body: This PR was created by a workflow action
           pr_label: git-flow
