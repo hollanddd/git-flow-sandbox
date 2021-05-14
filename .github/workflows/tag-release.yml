@@ -7,6 +7,14 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     steps:
+      - name: Extract tag from ref
+        id: ref_version
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // version from refs/heads/release/x.x.x
+            return { current: context.ref.substr(19, context.ref.length) }
       - uses: actions/checkout@v2
 
       - name: Extract tag from ref
