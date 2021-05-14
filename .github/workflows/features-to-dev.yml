@@ -1,4 +1,4 @@
-name: Create PR to merge features into develop
+name: Merge features into develop
 on:
   create
 

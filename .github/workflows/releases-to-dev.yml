@@ -1,4 +1,4 @@
-name: Create PR to merge release into develop
+name: Merge releases into develop
 on:
   create
 

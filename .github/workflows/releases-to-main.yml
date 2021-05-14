@@ -1,4 +1,4 @@
-name: Create PR to merge release into main
+name: Merge releases into main
 on:
   create
 
