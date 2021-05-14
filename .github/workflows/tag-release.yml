@@ -52,6 +52,8 @@ jobs:
       - name: Bump version
         run: npm version ${GITHUB_REF:19}
 
+      - name: Git status
+        run: git status && git remote -v
       - name: Git push
         run: git push --no-verify origin ${GITHUB_REF:11}
 
