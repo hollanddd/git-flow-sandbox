@@ -7,15 +7,6 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract tag from ref
-        id: ref_version
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // version from refs/heads/release/x.x.x
-            return { current: context.ref.substr(19, context.ref.length) }
-
       - uses: actions/checkout@v2
       - name: Build changelog
         id: build_changelog
@@ -30,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.ref_version.outputs.result.current }}
+          tag_name: ${GITHUB_REF:19}
           body: ${{ steps.build_changelog.outputs.changelog }}
           tag_schema: semantic
 
