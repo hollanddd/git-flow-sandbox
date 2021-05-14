@@ -11,7 +11,7 @@ jobs:
 
       - name: Extract tag from ref
         id: ref_version
-        run: echo '::set-output name=CURRENT::"${GITHUB_REF:19}"'
+        run: echo "::set-output name=CURRENT::${GITHUB_REF:19}"
 
       - name: Build changelog
         id: build_changelog
