@@ -8,15 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Extract tag from ref
-        id: release_version
+        id: version
         uses: actions/github-script@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             // version from refs/heads/release/x.x.x
-            return {
-              current: context.ref.substr(19, context.ref.length)
-            }
+            return { current: context.ref.substr(19, context.ref.length) }
+
       - uses: actions/checkout@v2
       - name: Build changelog
         id: build_changelog
@@ -24,17 +23,45 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           exclude: 'perf,other,breaking'
+
       - name: Create release
         id: create_release
         uses: zendesk/action-create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.release_version.outputs.result.current }}
+          tag_name: ${{ steps.version.outputs.result.current }}
           body: ${{ steps.build_changelog.outputs.changelog }}
           tag_schema: semantic
+
       - name: Bump version
         uses: 'reedyuk/npm-version@1.1.1'
         with:
-          version: ${{ steps.release_version.outputs.result.current }}
+          version: ${{ steps.version.outputs.result.current }}
           git-tag-version: false
+
+      - name: Commit new version
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: bump version to ${{ steps.version.outputs.result.current }}
+          commit_options: '--no-verify --signoff'
+          file_pattern: package.json
+          status_options: '--untracked-files=no'
+
+      - name: Merge releases into main
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "Merge release ${{ steps.version.outputs.result.current }} into main"
+          pr_body: "This PR was created by a workflow"
+          pr_label: "git-flow"
+
+      - name: Merge releases into develop
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: develop
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "Merge release ${{ steps.version.outputs.result.current }} into develop"
+          pr_body: "This PR was created by a workflow action"
+          pr_label: "git-flow"
