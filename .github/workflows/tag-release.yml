@@ -29,7 +29,7 @@ jobs:
 
       - name: Extract package version
         id: pkg_version
-        run: echo "::set-output name=VALUE::$(npm run info:version)"
+        run: echo "pkg_version=$(npm run info:version)" >> $GITHUB_ENV
 
       - name: Bump version
         run: npm version ${GITHUB_REF:19}
@@ -40,7 +40,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          fromTag: ${{ steps.pkg_version.outputs.VALUE }}
+          fromTag: ${{ env.pkg_version }}
           toTag: ${{ steps.ref_version.outputs.VALUE }}
 
       - name: Create release
