@@ -29,7 +29,7 @@ jobs:
 
       - name: Extract package version
         id: pkg_version
-        run: echo "pkg_version=$(npm run info:version)" >> $GITHUB_ENV
+        run: echo "pkg_version=$(node -pe \"require('./package.json').version\")" >> $GITHUB_ENV
 
       - name: Bump version
         run: npm version ${GITHUB_REF:19}
