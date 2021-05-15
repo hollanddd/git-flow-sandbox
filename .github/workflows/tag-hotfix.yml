@@ -2,10 +2,12 @@ name: Tag Hotfix
 on:
   create:
     branches:
-      - '!release/**'
       - hotfix/**
+    branches-ignore:
+      - release/**
 jobs:
   tag:
+    if: ${{ contains(github.ref, 'hotfix') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
