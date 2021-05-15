@@ -1,12 +1,9 @@
 name: Create Release
-on:
-  push:
-    tags:
-      - 1.*
-      - 2.*
+on: [push]
 
 jobs:
   tag:
+    if: ${{ contains(github.ref, 'refs/tags') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
