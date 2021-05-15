@@ -2,7 +2,7 @@ name: Create Release
 on: [push]
 
 jobs:
-  tag:
+  create-release:
     if: ${{ contains(github.ref, 'refs/tags') }}
     runs-on: ubuntu-latest
     steps:
