@@ -23,6 +23,17 @@ jobs:
           git config user.name ${GITHUB_ACTOR}
           git config user.email "<>"
 
+      - name: Extract tag from ref
+        id: ref_version
+        run: echo "::set-output name=VALUE::${GITHUB_REF:19}"
+
+      - name: Extract package version
+        id: pkg_version
+        run: |
+          echo 'pkg_version<<EOF' >> $GITHUB_ENV
+          node -pe "require('./package.json').version" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
       - name: Bump version
         run: |
           git tag ${GITHUB_REF:19}
@@ -50,3 +61,22 @@ jobs:
           pr_title: "ci: merge release ${{ steps.ref_version.outputs.VALUE }} into develop"
           pr_body: This PR was created by a workflow action
           pr_label: git-flow
+
+      - name: Build changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fromTag: ${{ env.pkg_version }}
+          toTag: ${{ steps.ref_version.outputs.VALUE }}
+
+      - name: Create release
+        id: create_release
+        uses: zendesk/action-create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.ref_version.outputs.VALUE }}
+          body: ${{ steps.build_changelog.outputs.changelog }}
+          tag_schema: semantic
