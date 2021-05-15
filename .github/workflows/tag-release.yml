@@ -3,11 +3,11 @@ on:
   create:
     branches:
       - release/**
-    branches-ignore:
-      - hotfix/**
+      - '!hotfix/**'
 
 jobs:
   tag:
+    if: ${{ contains(github.ref, 'release') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

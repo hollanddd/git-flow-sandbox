@@ -3,8 +3,7 @@ on:
   create:
     branches:
       - hotfix/**
-    branches-ignore:
-      - release/**
+      - '!release/**'
 jobs:
   tag:
     if: ${{ contains(github.ref, 'hotfix') }}
