@@ -1,0 +1,36 @@
+name: Create Release
+on:
+  push:
+    tags:
+      - '**'
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@hollanddd'
+
+      - name: Build changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fromTag: ${{ env.pkg_version }}
+          toTag: ${{ steps.ref_version.outputs.VALUE }}
+
+      - name: Create release
+        id: create_release
+        uses: zendesk/action-create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.ref_version.outputs.VALUE }}
+          body: ${{ steps.build_changelog.outputs.changelog }}
+          tag_schema: semantic
