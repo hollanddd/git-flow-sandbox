@@ -2,7 +2,8 @@ name: Tag Hotfix
 on:
   create:
     branches:
-      - hotfix/*
+      - '!release/**'
+      - hotfix/**
 jobs:
   tag:
     runs-on: ubuntu-latest
