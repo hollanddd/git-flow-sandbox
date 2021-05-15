@@ -24,7 +24,9 @@ jobs:
           git config user.email "<>"
 
       - name: Bump version
-        run: npm version ${GITHUB_REF:19}
+        run: |
+          git tag ${GITHUB_REF:19}
+          npm version ${GITHUB_REF:19}
 
       - name: Git push
         run: |
