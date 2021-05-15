@@ -43,8 +43,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          fromTag: ${{ env.pkg_version }}
-          toTag: ${{ steps.ref_version.outputs.VALUE }}
+          toTag: ${{ env.pkg_version }}
+          fromTag: ${{ steps.ref_version.outputs.VALUE }}
 
       - name: Create release
         id: create_release
