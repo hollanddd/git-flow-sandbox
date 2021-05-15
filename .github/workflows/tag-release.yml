@@ -22,6 +22,7 @@ jobs:
         run: |
           git config user.name ${GITHUB_ACTOR}
           git config user.email "<>"
+          git pull origin --tags
 
       - name: Extract tag from ref
         id: ref_version
@@ -43,8 +44,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          toTag: ${{ env.pkg_version }}
-          fromTag: ${{ steps.ref_version.outputs.VALUE }}
+          fromTag: ${{ env.pkg_version }}
+          toTag: ${{ steps.ref_version.outputs.VALUE }}
 
       - name: Create release
         id: create_release
