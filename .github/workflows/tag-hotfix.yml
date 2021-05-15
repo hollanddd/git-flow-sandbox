@@ -1,0 +1,68 @@
+name: Tag Hotfix
+on:
+  create:
+    branches:
+      - hotfix/**
+      - '!release/**'
+jobs:
+  tag:
+    if: ${{ contains(github.ref, 'hotfix') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Extract tag from ref
+        id: ref_version
+        run: echo "::set-output name=CURRENT::${GITHUB_REF:18}"
+
+      - name: Build changelog
+        id: build_changelog
+        uses: ardalanamini/auto-changelog@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          exclude: 'perf,other,breaking'
+
+      - name: Create release
+        id: create_release
+        uses: zendesk/action-create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.ref_version.outputs.CURRENT }}
+          body: ${{ steps.build_changelog.outputs.changelog }}
+          tag_schema: semantic
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@hollanddd'
+
+      - name: Setup git
+        run: |
+          git config user.name ${GITHUB_ACTOR}
+          git config user.email "<>"
+
+      - name: Bump version
+        run: npm version ${GITHUB_REF:18}
+
+      - name: Git push
+        run: git push --no-verify origin ${GITHUB_REF:11}
+
+      - name: Merge releases into main
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: 'ci: merge release into main'
+          pr_body: This PR was created by a workflow
+          pr_label: git-flow
+
+      - name: Merge releases into develop
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: develop
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: 'ci: merge release into develop'
+          pr_body: This PR was created by a workflow action
+          pr_label: git-flow

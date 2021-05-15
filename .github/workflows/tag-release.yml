@@ -2,9 +2,12 @@ name: Tag Release
 on:
   create:
     branches:
-      - release/*
+      - release/**
+      - '!hotfix/**'
+
 jobs:
   tag:
+    if: ${{ contains(github.ref, 'release') }}
     runs-on: ubuntu-latest
     steps:
       - name: Extract tag from ref
@@ -17,27 +20,6 @@ jobs:
             return { current: context.ref.substr(19, context.ref.length) }
       - uses: actions/checkout@v2
 
-      - name: Extract tag from ref
-        id: ref_version
-        run: echo "::set-output name=CURRENT::${GITHUB_REF:19}"
-
-      - name: Build changelog
-        id: build_changelog
-        uses: ardalanamini/auto-changelog@v1.1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          exclude: 'perf,other,breaking'
-
-      - name: Create release
-        id: create_release
-        uses: zendesk/action-create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.ref_version.outputs.CURRENT }}
-          body: ${{ steps.build_changelog.outputs.changelog }}
-          tag_schema: semantic
-
       - name: Setup node
         uses: actions/setup-node@v2
         with:
@@ -49,20 +31,35 @@ jobs:
           git config user.name ${GITHUB_ACTOR}
           git config user.email "<>"
 
+      - name: Extract tag from ref
+        id: ref_version
+        run: echo "::set-output name=VALUE::${GITHUB_REF:19}"
+
+      - name: Extract package version
+        id: pkg_version
+        run: |
+          echo 'pkg_version<<EOF' >> $GITHUB_ENV
+          node -pe "require('./package.json').version" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
       - name: Bump version
-        run: npm version ${GITHUB_REF:19}
+        run: |
+          git tag ${GITHUB_REF:19}
+          npm version ${GITHUB_REF:19}
 
       - name: Git status
         run: git status && git remote -v
       - name: Git push
-        run: git push --no-verify origin ${GITHUB_REF:11}
+        run: |
+          git push --no-verify origin ${GITHUB_REF:11}
+          git push --no-verify origin tag ${GITHUB_REF:19}
 
       - name: Merge releases into main
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: main
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: 'ci: merge release into main'
+          pr_title: "ci: merge release ${{ steps.ref_version.outputs.VALUE }} into main"
           pr_body: This PR was created by a workflow
           pr_label: git-flow
 
@@ -71,6 +68,25 @@ jobs:
         with:
           destination_branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: 'ci: merge release into develop'
+          pr_title: "ci: merge release ${{ steps.ref_version.outputs.VALUE }} into develop"
           pr_body: This PR was created by a workflow action
           pr_label: git-flow
+
+      - name: Build changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fromTag: ${{ env.pkg_version }}
+          toTag: ${{ steps.ref_version.outputs.VALUE }}
+
+      - name: Create release
+        id: create_release
+        uses: zendesk/action-create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.ref_version.outputs.VALUE }}
+          body: ${{ steps.build_changelog.outputs.changelog }}
+          tag_schema: semantic
