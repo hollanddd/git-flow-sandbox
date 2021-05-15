@@ -29,7 +29,7 @@ jobs:
       - name: Git push
         run: |
           git push --no-verify origin ${GITHUB_REF:11}
-          git push --no-verify origin --tags
+          git push --no-verify origin ${GITHUB_REF:19}
 
       - name: Merge releases into main
         uses: repo-sync/pull-request@v2
