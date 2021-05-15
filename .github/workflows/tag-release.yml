@@ -18,7 +18,7 @@ jobs:
 
       - name: Extract package version
         id: pkg_version
-        run: echo '::set-output name=VALUE::node -pe "require('package.json').version"'
+        run: echo "::set-output name=VALUE::npm run info:version"
 
       - name: Setup node
         uses: actions/setup-node@v2

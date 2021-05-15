@@ -3,6 +3,7 @@
   "version": "1.1.0",
   "scripts": {
     "build": "tsc --build",
+    "info:version": "node -pe \"require('./package.json').version\"",
     "lint": "eslint './src/**/*.ts'",
     "lint:fix": "eslint './src/**/*.ts' --fix",
     "prepubrm": "rm -rf ./dist && rm -rf ./src && rm *.test.js",
