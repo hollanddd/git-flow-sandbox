@@ -1,6 +1,6 @@
 {
   "name": "@hollanddd/gfsandbox",
-  "version": "1.1.0",
+  "version": "1.7.0",
   "scripts": {
     "build": "tsc --build",
     "lint": "eslint './src/**/*.ts'",
